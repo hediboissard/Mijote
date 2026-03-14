@@ -54,7 +54,7 @@ Dans la même page, section **Environment Variables**, ajoute **toutes** ces var
 
 | Nom | Valeur | Note |
 |-----|--------|------|
-| `DATABASE_URL` | Ta chaîne PostgreSQL Supabase | La même que dans ton `.env` local |
+| `DATABASE_URL` | Chaîne PostgreSQL (Supabase, Neon, etc.) | **En prod (Vercel), utilise l’URL « poolée »** (Supabase : mode Session, port 6543 ; Neon : option Pooled) pour éviter l’erreur « too many connections ». |
 | `NEXTAUTH_SECRET` | Ton secret (ex. celui du `.env`) | Générer un nouveau si tu préfères : `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | **À remplir après le 1er déploiement** | Voir étape 5 ci‑dessous |
 | `GOOGLE_CLIENT_ID` | Ton Client ID Google | Idem `.env` |
