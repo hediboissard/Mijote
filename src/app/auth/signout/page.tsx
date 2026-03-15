@@ -2,26 +2,25 @@
 
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import MijoteLogo from "@/components/MijoteLogo";
 
 export default function SignOutPage() {
   const { data: session } = useSession();
 
   async function handleSignOut() {
-    await signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: "/login" });
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-50 via-white to-zinc-100 px-4 py-10 font-sans text-zinc-900 dark:from-black dark:via-zinc-950 dark:to-black dark:text-zinc-50">
-      <div className="mx-auto flex max-w-md flex-col gap-6">
-        <div className="rounded-3xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
+    <main className="flex min-h-screen items-center justify-center bg-[#fdfcf7] px-4 font-sans text-[#2b2d2f]">
+      <div className="w-full max-w-md">
+        <div className="rounded-2xl border border-[#E5E7EB]/50 bg-white/90 p-6 shadow-sm backdrop-blur">
           <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-500">
-              PostForge
-            </p>
-            <h1 className="text-xl font-semibold tracking-tight">
+            <MijoteLogo size="sm" asLink />
+            <h1 className="font-recipe-title text-xl font-semibold tracking-tight text-[#2b2d2f]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
               Se déconnecter ?
             </h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-[#6b7280]">
               {session?.user?.email
                 ? `Tu es actuellement connecté en tant que ${session.user.email}.`
                 : "Tu es actuellement connecté."}
@@ -33,13 +32,13 @@ export default function SignOutPage() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+              className="w-full rounded-full bg-[#2d6a4f] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#1b4332]"
             >
               Oui, me déconnecter
             </button>
             <Link
               href="/"
-              className="w-full rounded-full border border-zinc-300 px-4 py-2 text-center text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-900"
+              className="w-full rounded-full border border-[#E5E7EB] px-4 py-2 text-center text-sm font-medium text-[#2b2d2f] transition hover:bg-[#E5E7EB]/50"
             >
               Non, retourner à l&apos;accueil
             </Link>

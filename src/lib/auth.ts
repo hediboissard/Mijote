@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma as Parameters<typeof PrismaAdapter>[0]),
+  adapter: PrismaAdapter(prisma as unknown as Parameters<typeof PrismaAdapter>[0]),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 jours
@@ -16,6 +16,7 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "Email & mot de passe",
@@ -55,14 +56,21 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
+      if (user?.email) {
         token.id = user.id;
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+          select: { role: true },
+        });
+        token.role = dbUser?.role ?? "USER";
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as Session["user"] & { id: string }).id = String(token.id ?? token.sub ?? "");
+        const u = session.user as Session["user"] & { id: string; role?: string };
+        u.id = String(token.id ?? token.sub ?? "");
+        u.role = (token.role as string) ?? "USER";
       }
       return session;
     },

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { toast } from "sonner";
+import MijoteLogo from "@/components/MijoteLogo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -71,9 +72,7 @@ export default function RegisterPage() {
       <div className="mx-auto flex max-w-md flex-col gap-6">
         <div className="rounded-3xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
           <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-500">
-              PostForge
-            </p>
+            <MijoteLogo size="sm" asLink />
             <h1 className="text-xl font-semibold tracking-tight">
               Créer un compte
             </h1>

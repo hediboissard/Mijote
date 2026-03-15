@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Mijoté - Application de recettes
 
 generator client {
   provider = "prisma-client"
@@ -19,13 +15,17 @@ model User {
   email         String?  @unique
   emailVerified DateTime?
   image         String?
+  bio           String?  @db.Text
+  role          String   @default("USER") // USER | ADMIN
 
-  // Pour l'auth email/mot de passe
   passwordHash String?
 
-  posts    Post[]
-  comments Comment[]
-  likes    Like[]
+  recipes       Recipe[]
+  comments      Comment[]
+  likes         Like[]
+  savedRecipes  SavedRecipe[]
+  followers     Follow[]   @relation("Following")
+  following     Follow[]   @relation("Followers")
 
   accounts Account[]
   sessions Session[]
@@ -34,49 +34,119 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique
-  content   String
-  imageUrl  String?
-  published Boolean  @default(true)
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  imageUrl    String?
+  servings    Int      @default(4)
+  prepTime    Int?     // minutes
+  cookTime    Int?     // minutes
+  published   Boolean  @default(true)
 
   authorId String
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  comments Comment[]
-  likes    Like[]
+  ingredients Ingredient[]
+  steps       Step[]
+  comments    Comment[]
+  likes       Like[]
+  savedBy     SavedRecipe[]
+
+  tags       RecipeTag[]
+  categories RecipeCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Ingredient {
+  id       String  @id @default(cuid())
+  recipeId String
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name     String
+  quantity Float   @default(1)
+  unit     String? // g, ml, pincée, etc.
+  order    Int     @default(0)
+}
+
+model Step {
+  id       String @id @default(cuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  content  String @db.Text
+  order    Int    @default(0)
+}
+
+model Tag {
+  id      String       @id @default(cuid())
+  name    String       @unique
+  recipes RecipeTag[]
+}
+
+model RecipeTag {
+  recipeId String
+  tagId    String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  @@id([recipeId, tagId])
+}
+
+model Category {
+  id      String            @id @default(cuid())
+  name    String            @unique
+  recipes RecipeCategory[]
+}
+
+model RecipeCategory {
+  recipeId   String
+  categoryId String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  @@id([recipeId, categoryId])
+}
+
 model Comment {
   id        String   @id @default(cuid())
-  content   String
-
-  authorId String
-  postId   String
-
-  author User @relation(fields: [authorId], references: [id])
-  post   Post @relation(fields: [postId], references: [id])
-
+  content   String   @db.Text
+  authorId  String
+  recipeId  String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
 model Like {
-  id      String   @id @default(cuid())
-  userId  String
-  postId  String
-  user    User @relation(fields: [userId], references: [id])
-  post    Post @relation(fields: [postId], references: [id])
+  id        String   @id @default(cuid())
+  userId    String
+  recipeId  String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-
-  @@unique([userId, postId])
+  @@unique([userId, recipeId])
 }
 
-/// NextAuth / Auth.js models
+model SavedRecipe {
+  id        String   @id @default(cuid())
+  userId    String
+  recipeId  String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([userId, recipeId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  @@unique([followerId, followingId])
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -90,9 +160,7 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([provider, providerAccountId])
 }
 
@@ -101,14 +169,12 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
   identifier String
-  token      String @unique
+  token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import MijoteLogo from "@/components/MijoteLogo";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -52,8 +53,11 @@ export default function LoginForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
       <div className="w-full max-w-md space-y-6 rounded-2xl bg-white p-8 shadow-xl dark:bg-zinc-900">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Se connecter à PostForge
+        <div className="flex items-center gap-2">
+          <MijoteLogo size="md" asLink />
+        </div>
+        <h1 className="text-2xl font-semibold text-[#2b2d2f]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>
+          Se connecter
         </h1>
 
         <button

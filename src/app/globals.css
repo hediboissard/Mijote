@@ -1,49 +1,60 @@
 @import "tailwindcss";
 
+/* Mijoté - Charte graphique */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfcf7;
+  --foreground: #2b2d2f;
+  --primary: #2d6a4f;
+  --primary-hover: #1b4332;
+  --secondary: #f4a261;
+  --secondary-hover: #e76f51;
+  --muted: #6b7280;
+  --border: rgba(229, 231, 235, 0.5);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
 }
 
-/* Scrollbar PostForge pour le texte d'article */
-.article-scroll {
+/* Titres des recettes - serif élégante */
+.font-recipe-title {
+  font-family: var(--font-serif);
+}
+
+/* Scrollbar Mijoté */
+.recipe-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #a1a1aa #18181b;
+  scrollbar-color: var(--primary) var(--border);
 }
 
-.article-scroll::-webkit-scrollbar {
+.recipe-scroll::-webkit-scrollbar {
   width: 8px;
 }
 
-.article-scroll::-webkit-scrollbar-track {
-  background: #18181b;
+.recipe-scroll::-webkit-scrollbar-track {
+  background: var(--border);
 }
 
-.article-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #22c55e, #a855f7);
+.recipe-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary);
   border-radius: 999px;
 }
 
-.article-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #16a34a, #7c3aed);
+.recipe-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
 }
